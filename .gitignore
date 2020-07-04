@@ -1,3 +1,6 @@
-__pycache__
+# file cache
+**/__pycache__
+*.sample
+*.pyc
 
-.sample
+/debug.log
