@@ -1,0 +1,9 @@
+from django.apps import AppConfig
+
+
+class AccountConfig(AppConfig):
+    name = 'account'
+    verbose_name = 'account manage'
+
+    def ready(self):
+        import apps.account.signals
