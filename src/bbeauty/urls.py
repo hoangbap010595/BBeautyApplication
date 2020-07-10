@@ -22,6 +22,7 @@ urlpatterns = [
     # path('system/', system_admin.site.urls),
     path('account/', include("apps.account.urls")),
     path('admin/', include("apps.system.urls")),
+    path('api/', include('apps.account.api.urls')),
     path('api/', include('apps.system.api.urls')),
 ]
 
