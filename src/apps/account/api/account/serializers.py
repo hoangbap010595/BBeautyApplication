@@ -2,6 +2,7 @@ from rest_framework import serializers, exceptions, status
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from apps.account.models import Profile, Setting
+from django.core.mail import EmailMessage
 
 
 class LoginSerializer(serializers.Serializer):
@@ -16,7 +17,6 @@ class LoginSerializer(serializers.Serializer):
 
         if username and password:
             user = authenticate(username=username, password=password)
-
             if user:
                 if user.is_active:
                     data["user"] = user
@@ -64,7 +64,7 @@ class RegisterSerializer(serializers.Serializer):
         try:
             user = User.objects.get(username=username)
             if user:
-                raise exceptions.APIException("Tài khoản đã được sử dụng")
+                raise exceptions.APIException("Tài khoản đã được đăng ký sử dụng")
         except User.DoesNotExist:
             pass
         # Check exists email
@@ -78,7 +78,36 @@ class RegisterSerializer(serializers.Serializer):
         # Create usser
         user = User.objects.create_user(
             username=username, email=email, password=password)
+
         data["user"] = user
+        return data
+
+    class Meta:
+        pass
+
+
+class PasswordSerializer(serializers.Serializer):
+    """
+    Serializer for password change endpoint.
+    """
+    old_password = serializers.CharField(required=True, error_messages={
+        "required": "Mật khẩu cũ là bắt buộc", "blank": "Mật khẩu cũ không được trống"})
+    new_password = serializers.CharField(required=True, error_messages={
+        "required": "Mật khẩu mới là bắt buộc", "blank": "Mật khẩu mới không được trống"})
+    new_password_confirm = serializers.CharField(required=True, error_messages={
+        "required": "Xác nhận mật khẩu là bắt buộc", "blank": "Xác nhận mật khẩu không được trống"})
+
+    def validate(self, data):
+        old_password = data.get('old_password', None)
+        new_password = data.get('new_password', None)
+        new_password_confirm = data.get('new_password_confirm', None)
+
+        if old_password is None:
+            raise exceptions.APIException("Mật khẩu cũ không được trống")
+        if new_password is None:
+            raise exceptions.APIException("Mật khẩu mới không được trống")
+        if new_password != new_password_confirm:
+            raise exceptions.APIException("Mật khẩu không trùng khớp")
         return data
 
     class Meta:

@@ -54,6 +54,10 @@ class LoginView(View):
         messages.warning(request, "Error login")
         return render(request, 'account/login.html', context=context)
 
+@login_required
+def profile(request):
+    pass
+
 def create_context_username_csrf(request):
     context = {}
     context.update(csrf(request))

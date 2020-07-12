@@ -12,9 +12,9 @@ def custom_exception_handler(exc, context):
     # Now add the HTTP status code to the response.
     if response is not None:
         try:
+            response2.data['status'] = status.HTTP_400_BAD_REQUEST
+            response2.data['result'] = 'exception'
             if 'detail' in response.data:
-                response2.data['status'] = status.HTTP_400_BAD_REQUEST
-                response2.data['result'] = 'exception'
                 response2.data['message'] = response.data['detail']
                 response2.data['data'] = {}
             else:
@@ -24,14 +24,12 @@ def custom_exception_handler(exc, context):
                     for key2 in value:
                         props.append(key2)
                     errors[key] = props
-                response2.data['status'] = status.HTTP_400_BAD_REQUEST
-                response2.data['result'] = 'exception'
                 response2.data['message'] = 'validation error'
                 response2.data['data'] = errors
         except:
             # Catch unexpected exceptions
-            response2 = Response({}, status.HTTP_400_BAD_REQUEST)
-            response2.data['status'] = status.HTTP_400_BAD_REQUEST
+            response2 = Response({}, response.status_code)
+            response2.data['status'] = response.status_code
             response2.data['result'] = 'exception'
             response2.data['message'] = 'validation error'
             response2.data['data'] = {}

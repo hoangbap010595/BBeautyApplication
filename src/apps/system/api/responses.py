@@ -8,7 +8,7 @@ from rest_framework.response import Response
 
 
 class APIResponse():
-    def __init__(self, message, data):
+    def __init__(self, message, data = {}):
         self.message = message
         self.data = data
 
@@ -23,9 +23,9 @@ class APIResponse():
 
     def error(self):
         result = {
-            "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
+            "status": status.HTTP_400_BAD_REQUEST,
             "result": "error",
             "message": self.message,
             "data": self.data
         }
-        return Response(result, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(result, status=status.HTTP_400_BAD_REQUEST)

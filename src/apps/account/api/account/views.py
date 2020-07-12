@@ -57,3 +57,23 @@ def profile(request):
     # Get detail
     serializer = UserSerializer(user)
     return APIResponse('Thông tin người dùng', serializer.data).success()
+
+
+@api_view(['POST'])
+def chang_password(request):
+    serializer = acc_serializers.PasswordSerializer(data=request.data)
+    # Get detail
+    serializer.is_valid(raise_exception=True)
+    # Get user register
+    # Check exists user
+    user = User.objects.get(username=request.user.username)
+    old_password = request.data.get('old_password')
+    if not user.check_password(old_password):
+        print('check_password')
+        return APIResponse("Mật khẩu hiện tại không đúng", {}).error()
+        # Create usser
+    user.set_password(request.data.get('new_password'))
+    user.save()
+    serializer = UserSerializer(user)
+
+    return APIResponse('Đổi mật khẩu thành công', serializer.data).success()
